@@ -1,38 +1,6 @@
 from collections import defaultdict
 from bisect import bisect_left, bisect
 
-# def part1_brute(lines):
-#     # Remove empty lines
-#     lines = [l for l in lines if l]
-
-#     seeds = [int(s) for s in lines[0].split(":")[1].split()]
-
-#     num_maps = len([l for l in lines if "map" in l])
-#     maps = [defaultdict(int) for _ in range(num_maps+1)]
-
-#     # Build maps
-#     # Add sentinel value for 0-indexing
-#     map_idx = -1
-#     for l in lines[1:]:
-#         if "map" in l:
-#             map_idx += 1
-#             continue
-    
-#         dest_start, source_start, range_ = [int(s) for s in l.split()]
-#         map_ = maps[map_idx]
-#         for s,d in zip(range(source_start, source_start+range_), range(dest_start, dest_start+range_)):
-#             map_[s] = d
-
-    
-
-    # min_location = float('inf')
-    # for s in seeds:
-    #     for m in maps:
-    #         s = m.get(s,s)
-    #     min_location = min(min_location, s)
-
-    # return min_location
-
 def part1(lines):
     # Remove empty lines
     lines = [l for l in lines if l]
@@ -40,8 +8,7 @@ def part1(lines):
     seeds = [int(s) for s in lines[0].split(":")[1].split()]
 
     num_maps = len([l for l in lines if "map" in l])
-    source_to_dest = [defaultdict(int) for _ in range(num_maps)]
-    ranges = [[] for _ in range(num_maps)]
+    maps = [[] for _ in range(num_maps)]
 
     map_idx = -1
     for l in lines[1:]:
@@ -50,29 +17,17 @@ def part1(lines):
             continue
     
         dest_start, source_start, range_ = [int(s) for s in l.split()]
-        map_, r = source_to_dest[map_idx], ranges[map_idx]
+        map_ = maps[map_idx]
+        map_.append([dest_start, source_start, range_])
 
-        map_[source_start] = dest_start
-        r.append(source_start)
-        r.append(source_start + (range_ - 1))
-
-
-    ranges = [sorted(r) for r in ranges]
 
     min_location = float('inf')
     for val in seeds:
-        for r,p in zip(ranges, source_to_dest):
-            # https://stackoverflow.com/a/8458993/6609793
-            if (idx := bisect(r, val)) % 2 == 1:
-                source_start = r[idx-1]
-                dest_start = p[source_start]
-                val = dest_start + (val - source_start)
-            # Edge case when val equals a right side boundary
-            # and returns an even index
-            elif idx <= len(r) and r[idx-1] == val:
-                source_start = r[idx-2]
-                dest_start = p[source_start]
-                val = dest_start + (val - source_start)
+        for map_ in maps:
+            for dest_start, source_start, range_  in map_:
+                if source_start <= val < (source_start + range_):
+                    val = dest_start + (val - source_start)
+                    break
         min_location = min(min_location, val)
 
     return min_location
