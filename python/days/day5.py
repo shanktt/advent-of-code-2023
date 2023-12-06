@@ -34,6 +34,23 @@ def part1(lines):
 
     return min_location
 
+def find_location(seeds, step_size, maps) -> (int,int):
+    min_location = float('inf')
+    seed = None
+    for (start,range_) in seeds:
+        for val in range(start,start+range_,step_size):
+            og_val = val
+            for map_ in maps:
+                for dest_start, source_start, range_  in map_:
+                    if source_start <= val < (source_start + range_):
+                        val = dest_start + (val - source_start) 
+                        break
+            if val < min_location:
+                min_location = val
+                seed = og_val
+    
+    return seed,min_location
+
 def part2(lines):
     # Remove empty lines
     lines = [l for l in lines if l]
@@ -57,18 +74,5 @@ def part2(lines):
         map_ = maps[map_idx]
         map_.append([dest_start, source_start, range_])
 
-    min_location = float('inf')
-    seed = None
-    for (start,range_) in seeds:
-        for val in range(start,start+range_,step_size):
-            og_val = val
-            for map_ in maps:
-                for dest_start, source_start, range_  in map_:
-                    if source_start <= val < (source_start + range_):
-                        val = dest_start + (val - source_start) 
-                        break
-            if val < min_location:
-                min_location = val
-                seed = og_val
-
-    return min_location
+    seed,location = find_location(seeds, step_size, maps)
+    return f"{seed} {location}"
