@@ -1,6 +1,3 @@
-from collections import defaultdict
-from bisect import bisect_left, bisect
-
 def part1(lines):
     # Remove empty lines
     lines = [l for l in lines if l]
@@ -51,6 +48,22 @@ def find_location(seeds, step_size, maps) -> (int,int):
     
     return seed,min_location
 
+def find_location2(start, step_size, range_, maps) -> (int,int):
+    min_location = float('inf')
+    seed = None
+    for val in range(start,start+range_,step_size):
+        og_val = val
+        for map_ in maps:
+            for dest_start, source_start, range_  in map_:
+                if source_start <= val < (source_start + range_):
+                    val = dest_start + (val - source_start) 
+                    break
+        if val < min_location:
+            min_location = val
+            seed = og_val
+    
+    return seed,min_location
+
 def part2(lines):
     # Remove empty lines
     lines = [l for l in lines if l]
@@ -75,4 +88,16 @@ def part2(lines):
         map_.append([dest_start, source_start, range_])
 
     seed,location = find_location(seeds, step_size, maps)
+    while step_size:
+        left_seed = seed - step_size
+        right_seed = seed + step_size
+
+        left_seed,left_loc = find_location2(left_seed, (step_size // 10), step_size, maps)
+        right_seed,right_loc = find_location2(right_seed, (step_size // 10), step_size, maps)
+        
+
+
+        seed = left_seed if left_loc < right_loc else right_seed
+        location = left_loc if left_loc < right_loc else right_loc
+
     return f"{seed} {location}"
