@@ -87,17 +87,22 @@ def part2(lines):
         map_ = maps[map_idx]
         map_.append([dest_start, source_start, range_])
 
-    seed,location = find_location(seeds, step_size, maps)
-    while step_size:
-        left_seed = seed - step_size
-        right_seed = seed + step_size
+    max_location = max([d+(r-1) for (d,_,r) in maps[-1]])
+    rev_maps = maps[::-1]
+    for loc in range(max_location+1):
+        val = loc
+        # print(f"{loc}")
+        for idx,map_ in enumerate(rev_maps, start=1):
+            for dest_start, source_start, range_  in map_:
+                if dest_start <= val < (dest_start + range_):
+                    val = source_start + (val - dest_start)
+                    break
+            # print(f"{val}")
+        # print(f"final val: {val}")
+        for seed_start,range_ in seeds:
+            # print(f"{seed_start} {val} {seed_start + range_}")
+            if seed_start <= val < (seed_start + range_):
+                return loc
+        # print("------")
 
-        left_seed,left_loc = find_location2(left_seed, (step_size // 10), step_size, maps)
-        right_seed,right_loc = find_location2(right_seed, (step_size // 10), step_size, maps)
-        
-
-
-        seed = left_seed if left_loc < right_loc else right_seed
-        location = left_loc if left_loc < right_loc else right_loc
-
-    return f"{seed} {location}"
+    return loc
