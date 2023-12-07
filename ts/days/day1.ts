@@ -1,17 +1,32 @@
 export function part1(inputData: string): number {
-    const numbers = inputData.split('\n').map(Number);
-    let count = 0;
+    const lines = inputData.split('\n')
 
-    for (let i = 1; i < numbers.length; i++) {
-        if (numbers[i] > numbers[i - 1]) {
-            count++;
-        }
-    }
-
-    return count;
+    let sum = 0;
+    lines.forEach(line => {
+        const digits = line.split('')
+            .filter((char) => char >= "0" && char <= "9")
+            .map(Number)
+        sum += ((digits[0]*10) + digits[digits.length - 1]);
+    });
+    
+    return sum;
 }
 
 export function part2(inputData: string): number {
-    const numbers = inputData.split('\n').map(Number);
-    return numbers.reduce((sum, current) => sum + current, 0);
+    // const strToInt = {
+    //     "one": 1,
+    //     "two": 2,
+    //     "three": 3,
+    //     "four": 4,
+    //     "five": 5,
+    //     "six": 6,
+    //     "seven": 7,
+    //     "eight": 8,
+    //     "nine": 9,
+    // }
+
+    const digitsStrs = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    const regexp = "";
+
+    return 0;
 }
