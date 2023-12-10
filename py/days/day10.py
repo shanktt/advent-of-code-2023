@@ -33,6 +33,20 @@ D_TO_CORD = {
     "W": [0,-1],
 }
 
+'''
+https://chat.openai.com/share/43ff5c12-8e38-4008-b7b2-fe6e64e0d092
+
+Assuming S is like the other pipes (implied by problem statement)
+then it should only connect to two other pipes. Therefore only one
+loop (where edges are repeated in the loop) exists in graph G that 
+contains S. Starting from S and traversing, each node has two edges, 
+one from where it came from, and one other one. Therefore, there are
+only "two" paths that start at S and flow through the two nodes directly 
+connected to it, until they meet one another.
+So instead of having to worry about finding all cycles in 
+G that contain S, we can instead just find the node furthest from S
+using a BFS, since 
+''' 
 def part1(lines):
     grid = [list(l) for l in lines]
     M = len(grid)
@@ -46,7 +60,6 @@ def part1(lines):
                 break
     cycles = []
     def dfs(x,y, visited, path_len, i):
-        print(i)
         if grid[x][y] == "S" and visited:
             cycles.append(path_len)
 
