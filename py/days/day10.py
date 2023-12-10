@@ -45,7 +45,7 @@ only "two" paths that start at S and flow through the two nodes directly
 connected to it, until they meet one another.
 So instead of having to worry about finding all cycles in 
 G that contain S, we can instead just find the node furthest from S
-using a BFS, since 
+using a BFS, since this node will necessarily have to be part of the loop 
 ''' 
 def part1(lines):
     grid = [list(l) for l in lines]
