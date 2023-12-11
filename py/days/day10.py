@@ -7,6 +7,7 @@
 # . is ground; there is no pipe in this tile.
 # S is the starting position of the animal; there is a pipe on this tile, but your sketch doesn't show what shape the pipe has.
 import sys
+from collections import deque
 
 sys.setrecursionlimit(100000)
 PIPE_TO_D = {
@@ -61,26 +62,70 @@ def part1(lines):
     cycles = []
     def dfs(x,y, visited, path_len, i):
         if grid[x][y] == "S" and visited:
-            cycles.append(path_len)
+            cycles.append(path_len[::])
+            return
 
         pipe = grid[x][y]
-        for directions in PIPE_TO_D[pipe]:
-            for d in directions:
-                cords = D_TO_CORD[d]
-                new_x, new_y = x+cords[0], y+cords[1]
-                if new_x in range(M) and new_y in range(N) and f"{(x,y)}->{(new_x,new_y)}" not in visited and f"{(new_x,new_y)}->{(x,y)}" not in visited and grid[new_x][new_y] in PIPE_TO_D and D_TO_OPP[d] in PIPE_TO_D[grid[new_x][new_y]]:
-                    path_len += 1
-                    visited.add(f"{(x,y)}->{(new_x,new_y)}")
-                    visited.add(f"{(new_x,new_y)}->{(x,y)}")
-                    dfs(new_x,new_y,visited,path_len, i+1)
-                    path_len -= 1
-                    visited.remove(f"{(x,y)}->{(new_x,new_y)}")
-                    visited.remove(f"{(new_x,new_y)}->{(x,y)}")
+        for d in PIPE_TO_D[pipe]:
+            cords = D_TO_CORD[d]
+            new_x, new_y = x+cords[0], y+cords[1]
+            if new_x in range(M) and new_y in range(N) and f"{(x,y)}->{(new_x,new_y)}" not in visited and f"{(new_x,new_y)}->{(x,y)}" not in visited and grid[new_x][new_y] in PIPE_TO_D and D_TO_OPP[d] in PIPE_TO_D[grid[new_x][new_y]]:
+                path_len.append((new_x,new_y))
+                visited.add(f"{(x,y)}->{(new_x,new_y)}")
+                visited.add(f"{(new_x,new_y)}->{(x,y)}")
+                dfs(new_x,new_y,visited,path_len, i+1)
+                path_len.pop()
+                visited.remove(f"{(x,y)}->{(new_x,new_y)}")
+                visited.remove(f"{(new_x,new_y)}->{(x,y)}")
 
     x,y = starting_loc
     visited = set()
-    dfs(x,y, visited, 0, 0)
-    return max((c//2) for c in cycles)
+    dfs(x,y, visited, [], 0)
+    # print(cycles[0])
+    # print
+    return max((len(c)//2) for c in cycles)
+
+def shoelace(points):
+    #+ points[-1][0]*points[0][1]
+    sum1 = sum([points[i][0]*points[i+1][1]  for i in range(len(points)-1)])
+    #+ points[-1][1]*points[0][0]
+    sum2 = sum([points[i][1]*points[i+1][0]  for i in range(len(points)-1)])
+
+
+
+    return 0.5 * abs((sum1-sum2) + ((points[-1][0]*points[0][1])-(points[-1][1]*points[0][0])))
 
 def part2(lines):
-    return 0
+    # get cycle
+    # compute shoelace: https://en.wikipedia.org/wiki/Shoelace_formula
+    # return A - (b/2) + 1 where b is length of cycle: https://en.wikipedia.org/wiki/Pick%27s_theorem
+
+    deq = deque([])
+    visited = []
+    grid = [list(l) for l in lines]
+    M = len(grid)
+    N = len(grid[0])
+
+    for r in range(M):
+        for c in range(N):
+            if grid[r][c] == "S":
+                deq.append((r,c))
+                visited.append((r,c))
+                break
+
+    # cycle = set()
+    while deq:
+        for _ in range(len(deq)):
+            r,c = deq.pop()
+            pipe = grid[r][c]
+            for d in PIPE_TO_D[pipe]:
+                if pipe == "S" and deq:
+                    break
+                cords = D_TO_CORD[d]
+                new_r, new_c = r+cords[0], c+cords[1]
+                if new_r in range(M) and new_c in range(N) and (new_r,new_c) not in visited and grid[new_r][new_c] in PIPE_TO_D and D_TO_OPP[d] in PIPE_TO_D[grid[new_r][new_c]]:
+                    deq.append((new_r,new_c))
+                    visited.append((new_r,new_c))
+
+    area = shoelace(visited)
+    return area - (len(visited) / 2)  + 1
