@@ -86,14 +86,12 @@ def part1(lines):
     return max((len(c)//2) for c in cycles)
 
 def shoelace(points):
-    #+ points[-1][0]*points[0][1]
-    sum1 = sum([points[i][0]*points[i+1][1]  for i in range(len(points)-1)])
-    #+ points[-1][1]*points[0][0]
-    sum2 = sum([points[i][1]*points[i+1][0]  for i in range(len(points)-1)])
+    sum1 = sum([points[i][0]*points[(i+1) % len(points)][1]  for i in range(len(points))])
+    sum2 = sum([points[i][1]*points[(i+1) % len(points)][0]  for i in range(len(points))])
 
 
 
-    return 0.5 * abs((sum1-sum2) + ((points[-1][0]*points[0][1])-(points[-1][1]*points[0][0])))
+    return abs(sum1-sum2) / 2
 
 def part2(lines):
     # get cycle
@@ -113,7 +111,6 @@ def part2(lines):
                 visited.append((r,c))
                 break
 
-    # cycle = set()
     while deq:
         for _ in range(len(deq)):
             r,c = deq.pop()
