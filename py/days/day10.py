@@ -107,7 +107,6 @@ def part2(lines):
         for c in range(N):
             if grid[r][c] == "S":
                 deq.append((r,c))
-                # visited.append((r,c))
                 visited[(r,c)] = True
                 break
 
@@ -116,13 +115,13 @@ def part2(lines):
             r,c = deq.pop()
             pipe = grid[r][c]
             for d in PIPE_TO_D[pipe]:
-                if pipe == "S" and deq:
-                    break
                 cords = D_TO_CORD[d]
                 new_r, new_c = r+cords[0], c+cords[1]
                 if new_r in range(M) and new_c in range(N) and (new_r,new_c) not in visited and grid[new_r][new_c] in PIPE_TO_D and D_TO_OPP[d] in PIPE_TO_D[grid[new_r][new_c]]:
                     deq.append((new_r,new_c))
                     visited[(new_r,new_c)] = True
+                    break 
+                    # only explore one edge per node. This only applies to S, since we want to go around the loop in one direction and order points in that direction
 
     area = shoelace(list(visited.keys()))
     return area - (len(visited) / 2)  + 1
