@@ -86,10 +86,9 @@ def part1(lines):
     return max((len(c)//2) for c in cycles)
 
 def shoelace(points):
+    # implictly handle x1yn and y1xn terms in each summation
     sum1 = sum([points[i][0]*points[(i+1) % len(points)][1]  for i in range(len(points))])
     sum2 = sum([points[i][1]*points[(i+1) % len(points)][0]  for i in range(len(points))])
-
-
 
     return abs(sum1-sum2) / 2
 
@@ -99,7 +98,7 @@ def part2(lines):
     # return A - (b/2) + 1 where b is length of cycle: https://en.wikipedia.org/wiki/Pick%27s_theorem
 
     deq = deque([])
-    visited = []
+    visited = dict()
     grid = [list(l) for l in lines]
     M = len(grid)
     N = len(grid[0])
@@ -108,7 +107,8 @@ def part2(lines):
         for c in range(N):
             if grid[r][c] == "S":
                 deq.append((r,c))
-                visited.append((r,c))
+                # visited.append((r,c))
+                visited[(r,c)] = True
                 break
 
     while deq:
@@ -122,7 +122,7 @@ def part2(lines):
                 new_r, new_c = r+cords[0], c+cords[1]
                 if new_r in range(M) and new_c in range(N) and (new_r,new_c) not in visited and grid[new_r][new_c] in PIPE_TO_D and D_TO_OPP[d] in PIPE_TO_D[grid[new_r][new_c]]:
                     deq.append((new_r,new_c))
-                    visited.append((new_r,new_c))
+                    visited[(new_r,new_c)] = True
 
-    area = shoelace(visited)
+    area = shoelace(list(visited.keys()))
     return area - (len(visited) / 2)  + 1
