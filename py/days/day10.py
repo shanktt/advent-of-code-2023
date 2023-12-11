@@ -112,7 +112,7 @@ def part2(lines):
 
     while deq:
         for _ in range(len(deq)):
-            r,c = deq.pop()
+            r,c = deq.popleft()
             pipe = grid[r][c]
             for d in PIPE_TO_D[pipe]:
                 cords = D_TO_CORD[d]
