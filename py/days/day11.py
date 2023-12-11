@@ -12,12 +12,7 @@ def get_answer(grid,expansion_size=1):
         if all([c == "." for c in grid[r]]):
             expanded_rows.append(r)
     for c in range(N):
-        expand = True
-        for r in range(M):
-            if grid[r][c] != ".":
-                expand = False
-                break
-        if expand:
+        if all([grid[r][c] == "." for r in range(N)]):
             expanded_cols.append(c)
 
     galaxy_cords = []
