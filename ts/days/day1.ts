@@ -1,17 +1,14 @@
 export function part1(inputData: string): number {
     const lines = inputData.split('\n')
 
-    let sum = 0;
-    lines.forEach(line => {
+    return lines.reduce((sum,line) => {
         const digits = line.split('')
             .filter((char) => char >= "0" && char <= "9")
             .map(Number)
-        sum += ((digits[0]*10) + digits[digits.length - 1]);
-    });
+        return sum+((digits[0]*10) + digits[digits.length - 1]);
+    },0);
     
-    return sum;
 }
-
 export function part2(inputData: string): number {
     const lines = inputData.split('\n')
 
